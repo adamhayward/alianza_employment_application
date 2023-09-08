@@ -1,25 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { Route, Routes } from "react-router-dom";
 
-function App() {
+import PersonalInfo from "./components/pages/personal_info";
+
+import PageLayout from "./components/layouts/layout";
+
+export default function App() {
+
+  fetch("https://api.monday.com/v2", {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: process.env.REACT_APP_MONDAY_API_KEY,
+      "API-Version": "2023-04",
+    },
+    body: JSON.stringify({
+      query: "query{boards (limit:5) {id name} }",
+    }),
+  })
+    .then((res) => res.json())
+    .then((res) => console.log(JSON.stringify(res, null, 2)));
+
+  let query = "query {boards (ids: 4766802308) { columns { id title type }}}";
+
+  fetch("https://api.monday.com/v2", {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: process.env.REACT_APP_MONDAY_API_KEY,
+    },
+    body: JSON.stringify({
+      query: query,
+    }),
+  })
+    .then((res) => res.json())
+    .then((res) => console.log(JSON.stringify(res, null, 2)));
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <PageLayout>
+      <Routes basename="/">
+        <Route path="/" element={<PersonalInfo/>} />
+      </Routes>
+    </PageLayout>
   );
 }
-
-export default App;
